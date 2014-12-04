@@ -8,23 +8,33 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func ScrapeFunda(url string) {
+type House struct {
+	address string
+	price   string
+	link    string
+}
+
+func ScrapeFunda(url string, result *[]House) {
+	fmt.Printf("Scraping %s\n", url)
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	doc.Find(".nvm").Each(func(i int, s *goquery.Selection) {
-		address := strings.TrimSpace(s.Find(".object-street").Text())
-		link, _ := s.Find(".object-street").Attr("href")
-		price := s.Find(".price").Text()
+		var h House
+		h.address = strings.TrimSpace(s.Find(".object-street").Text())
+		h.link, _ = s.Find(".object-street").Attr("href")
+		h.price = s.Find(".price").Text()
 
-		fmt.Printf("House %d: %s - %s - %s\n", i, address, link, price)
+		*result = append(*result, h)
 	})
 }
 
 func main() {
-	for i := 1; 1 <= 10; i++ {
-		ScrapeFunda(fmt.Sprintf("http://www.funda.nl/koop/amsterdam/0-200000/3+kamers/p%d", i))
+	var results []House
+	for i := 1; i <= 10; i++ {
+		ScrapeFunda(fmt.Sprintf("http://www.funda.nl/koop/amsterdam/0-200000/3+kamers/p%d", i), &results)
 	}
+	fmt.Println(results)
 }
