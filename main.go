@@ -30,13 +30,13 @@ func ScrapeFunda(url string, result *[]House) {
 	numberRegex, _ := regexp.Compile("[0-9\\.]+")
 	notNumberRegex, _ := regexp.Compile("[^0-9]")
 
-	doc.Find(".nvm").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".search-result").Each(func(i int, s *goquery.Selection) {
 
 		var h House
-		h.Address = strings.TrimSpace(s.Find(".object-street").Text())
-		h.Link, _ = s.Find(".object-street").Attr("href")
+		h.Address = strings.TrimSpace(s.Find(".search-result-title").Text())
+		h.Link, _ = s.Find(".search-result-header a").Attr("href")
 
-		firstPrice := numberRegex.FindString(s.Find(".price").Text())
+		firstPrice := numberRegex.FindString(s.Find(".search-result-price").Text())
 		priceString := notNumberRegex.ReplaceAllString(firstPrice, "")
 		h.Price, _ = strconv.Atoi(priceString)
 
